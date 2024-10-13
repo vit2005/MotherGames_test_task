@@ -96,12 +96,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4570157599844447218}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c2a8ee85d515c343a70e9b80700c61a, type: 3}
+  m_Script: {fileID: 11500000, guid: b808b7fdd832b4441b3e75c76e7c914e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Hp: 2
   Damage: 1
   AtackSpeed: 1
+  AttackRange: 1
   AnimatorController: {fileID: 7475179364339281051}
   Agent: {fileID: 8767279960998370427}
 --- !u!195 &8767279960998370427

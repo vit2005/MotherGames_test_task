@@ -16,9 +16,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         if (isDead)
-        {
             return;
-        }
 
         if (Hp <= 0)
         {
@@ -26,9 +24,13 @@ public class Player : MonoBehaviour
             return;
         }
 
+        AutoAttack();
+    }
 
+    private void AutoAttack()
+    {
         var enemies = SceneManager.Instance.Enemies;
-        Enemie closestEnemie = null;
+        Enemy closestEnemie = null;
 
         for (int i = 0; i < enemies.Count; i++)
         {

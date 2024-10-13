@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemie : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
     public float Hp;
-    public float Damage;
-    public float AtackSpeed;
-    public float AttackRange = 2;
+    [SerializeField] private float Damage;
+    [SerializeField] private float AtackSpeed;
+    [SerializeField] private float AttackRange;
 
 
-    public Animator AnimatorController;
-    public NavMeshAgent Agent;
+    [SerializeField] private Animator AnimatorController;
+    [SerializeField] private NavMeshAgent Agent;
 
     private float lastAttackTime = 0;
     private bool isDead = false;
@@ -22,12 +22,11 @@ public class Enemie : MonoBehaviour
     {
         SceneManager.Instance.AddEnemie(this);
         Agent.SetDestination(SceneManager.Instance.Player.transform.position);
-
     }
 
     private void Update()
     {
-        if(isDead)
+        if (isDead)
         {
             return;
         }
@@ -59,7 +58,6 @@ public class Enemie : MonoBehaviour
         Debug.Log(Agent.speed);
 
     }
-
 
 
     private void Die()

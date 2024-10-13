@@ -8,7 +8,7 @@ public class SceneManager : MonoBehaviour
     public static SceneManager Instance;
 
     public Player Player;
-    public List<Enemie> Enemies;
+    public List<Enemy> Enemies;
     public GameObject Lose;
     public GameObject Win;
 
@@ -25,12 +25,12 @@ public class SceneManager : MonoBehaviour
         SpawnWave();
     }
 
-    public void AddEnemie(Enemie enemie)
+    public void AddEnemie(Enemy enemie)
     {
         Enemies.Add(enemie);
     }
 
-    public void RemoveEnemie(Enemie enemie)
+    public void RemoveEnemie(Enemy enemie)
     {
         Enemies.Remove(enemie);
         if(Enemies.Count == 0)
@@ -66,6 +66,5 @@ public class SceneManager : MonoBehaviour
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
-    
 
 }
