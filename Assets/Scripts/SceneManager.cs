@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour
 {
@@ -9,11 +10,13 @@ public class SceneManager : MonoBehaviour
 
     public Player Player;
     public List<Enemy> Enemies;
-    public GameObject Lose;
-    public GameObject Win;
+
+    [SerializeField] private GameObject Lose;
+    [SerializeField] private GameObject Win;
 
     private int currWave = 0;
     [SerializeField] private LevelConfig Config;
+    [SerializeField] private Text wawesText;
 
     private void Awake()
     {
@@ -25,14 +28,14 @@ public class SceneManager : MonoBehaviour
         SpawnWave();
     }
 
-    public void AddEnemie(Enemy enemie)
+    public void AddEnemy(Enemy enemy)
     {
-        Enemies.Add(enemie);
+        Enemies.Add(enemy);
     }
 
-    public void RemoveEnemie(Enemy enemie)
+    public void RemoveEnemy(Enemy enemy)
     {
-        Enemies.Remove(enemie);
+        Enemies.Remove(enemy);
         if(Enemies.Count == 0)
         {
             SpawnWave();
@@ -59,7 +62,7 @@ public class SceneManager : MonoBehaviour
             Instantiate(character, pos, Quaternion.identity);
         }
         currWave++;
-
+        wawesText.text = $"Wave: {currWave}/{Config.Waves.Length}";
     }
 
     public void Reset()

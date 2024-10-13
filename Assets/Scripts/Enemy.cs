@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        SceneManager.Instance.AddEnemie(this);
+        SceneManager.Instance.AddEnemy(this);
         Agent.SetDestination(SceneManager.Instance.Player.transform.position);
     }
 
@@ -60,7 +60,7 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
-        SceneManager.Instance.RemoveEnemie(this);
+        SceneManager.Instance.RemoveEnemy(this);
         isDead = true;
         AnimatorController.SetTrigger("Die");
     }
