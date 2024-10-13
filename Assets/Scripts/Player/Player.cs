@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -24,53 +25,34 @@ public class Player : MonoBehaviour
             return;
         }
 
-        AutoAttack();
+        // AutoAttack();
     }
 
-    private void AutoAttack()
+    public void OnAttackClick()
+    {
+        if (Time.time - lastAttackTime > AtackSpeed)
+        {
+            lastAttackTime = Time.time;
+            AnimatorController.SetTrigger("Attack");
+
+            Attack();
+        }
+    }
+
+    private void Attack()
     {
         var enemies = SceneManager.Instance.Enemies;
-        Enemy closestEnemie = null;
 
-        for (int i = 0; i < enemies.Count; i++)
+        var closest = enemies
+            .Where(e => e != null)
+            .Select(e => new { Enemie = e, Distance = Vector3.Distance(transform.position, e.transform.position) })
+            .OrderBy(x => x.Distance)
+            .FirstOrDefault();
+
+        if (closest != null)
         {
-            var enemie = enemies[i];
-            if (enemie == null)
-            {
-                continue;
-            }
-
-            if (closestEnemie == null)
-            {
-                closestEnemie = enemie;
-                continue;
-            }
-
-            var distance = Vector3.Distance(transform.position, enemie.transform.position);
-            var closestDistance = Vector3.Distance(transform.position, closestEnemie.transform.position);
-
-            if (distance < closestDistance)
-            {
-                closestEnemie = enemie;
-            }
-
-        }
-
-        if (closestEnemie != null)
-        {
-            var distance = Vector3.Distance(transform.position, closestEnemie.transform.position);
-            if (distance <= AttackRange)
-            {
-                if (Time.time - lastAttackTime > AtackSpeed)
-                {
-                    //transform.LookAt(closestEnemie.transform);
-                    transform.transform.rotation = Quaternion.LookRotation(closestEnemie.transform.position - transform.position);
-
-                    lastAttackTime = Time.time;
-                    closestEnemie.Hp -= Damage;
-                    AnimatorController.SetTrigger("Attack");
-                }
-            }
+            if (closest.Distance <= AttackRange)
+                closest.Enemie.Hp -= Damage;
         }
     }
 
