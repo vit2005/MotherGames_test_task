@@ -2,17 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public float Hp;
     public float Damage;
-    public float AtackSpeed;
+    public float AttackSpeed;
+
+    public float SuperDamage;
+    public float SuperAttackSpeed;
+
     public float AttackRange = 2;
 
+    [SerializeField] private Animator AnimatorController;
+
+    [SerializeField] private Image attackCooldownIndicator;
+    [SerializeField] private Image superCooldownIndicator;
+    [SerializeField] private Button superButton;
+
     private float lastAttackTime = 0;
+    private float lastSuperTime = 0;
+
+    private Coroutine _attackCooldown;
+    private Coroutine _superCooldown;
+
+    private Enemy closestEnemy;
+
     private bool isDead = false;
-    public Animator AnimatorController;
 
     private void Update()
     {
@@ -25,35 +42,82 @@ public class Player : MonoBehaviour
             return;
         }
 
-        // AutoAttack();
+        UpdateClosestEnemy();
+        superButton.interactable = closestEnemy != null;
     }
 
     public void OnAttackClick()
     {
-        if (Time.time - lastAttackTime > AtackSpeed)
+        if (_attackCooldown == null && Time.time - lastAttackTime > AttackSpeed)
         {
             lastAttackTime = Time.time;
             AnimatorController.SetTrigger("Attack");
 
-            Attack();
+            Attack(Damage);
+            _attackCooldown = StartCoroutine(AttackCooldown());
         }
     }
 
-    private void Attack()
+    private IEnumerator AttackCooldown()
+    {
+        float value;
+        do
+        {
+            value = (Time.time - lastAttackTime) / AttackSpeed;
+            attackCooldownIndicator.fillAmount = (Time.time - lastAttackTime) / AttackSpeed;
+            yield return null;
+        } while (value < 1);
+        _attackCooldown = null;
+    }
+
+    public void OnSuperClick()
+    {
+        if (_superCooldown == null && Time.time - lastSuperTime > SuperAttackSpeed)
+        {
+            lastSuperTime = Time.time;
+            AnimatorController.SetTrigger("Super");
+
+            Attack(SuperDamage);
+            _superCooldown = StartCoroutine(SuperCooldown());
+        }
+    }
+
+    private IEnumerator SuperCooldown()
+    {
+        float value;
+        do
+        {
+            value = (Time.time - lastSuperTime) / SuperAttackSpeed;
+            superCooldownIndicator.fillAmount = (Time.time - lastSuperTime) / SuperAttackSpeed;
+            yield return null;
+        } while (value < 1);
+        _superCooldown = null;
+    }
+
+    private void UpdateClosestEnemy()
     {
         var enemies = SceneManager.Instance.Enemies;
 
         var closest = enemies
             .Where(e => e != null)
-            .Select(e => new { Enemie = e, Distance = Vector3.Distance(transform.position, e.transform.position) })
+            .Select(e => new { Enemy = e, Distance = Vector3.Distance(transform.position, e.transform.position) })
             .OrderBy(x => x.Distance)
             .FirstOrDefault();
 
         if (closest != null)
         {
             if (closest.Distance <= AttackRange)
-                closest.Enemie.Hp -= Damage;
+                closestEnemy = closest.Enemy;
+            else
+                closestEnemy = null;
         }
+        else
+            closestEnemy = null;
+    }
+
+    private void Attack(float damage)
+    {
+        closestEnemy.Hp -= damage;
     }
 
     private void Die()
