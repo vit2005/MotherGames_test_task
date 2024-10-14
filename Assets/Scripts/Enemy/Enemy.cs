@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float Damage;
     [SerializeField] private float AtackSpeed;
     [SerializeField] private float AttackRange;
-
+    [SerializeField] private float regenPlayerHp;
 
     [SerializeField] private Animator AnimatorController;
     [SerializeField] private NavMeshAgent Agent;
@@ -18,7 +18,7 @@ public class Enemy : MonoBehaviour
     private bool isDead = false;
 
 
-    private void Start()
+    public void Init()
     {
         SceneManager.Instance.AddEnemy(this);
         Agent.SetDestination(SceneManager.Instance.Player.transform.position);
@@ -46,7 +46,7 @@ public class Enemy : MonoBehaviour
             if (Time.time - lastAttackTime > AtackSpeed)
             {
                 lastAttackTime = Time.time;
-                SceneManager.Instance.Player.Hp -= Damage;
+                SceneManager.Instance.Player.ReceiveDamage(Damage);
                 AnimatorController.SetTrigger("Attack");
             }
         }
@@ -58,9 +58,11 @@ public class Enemy : MonoBehaviour
     }
 
 
-    private void Die()
+    protected virtual void Die()
     {
+        SceneManager.Instance.Player.Regen(regenPlayerHp);
         SceneManager.Instance.RemoveEnemy(this);
+        TakedownControllerUI.Instance.SpawnTakedown(gameObject.name);
         isDead = true;
         AnimatorController.SetTrigger("Die");
     }

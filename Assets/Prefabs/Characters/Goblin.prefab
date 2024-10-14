@@ -103,6 +103,7 @@ MonoBehaviour:
   Damage: 1
   AtackSpeed: 1
   AttackRange: 1
+  regenPlayerHp: 1
   AnimatorController: {fileID: 7475179364339281051}
   Agent: {fileID: 8767279960998370427}
 --- !u!195 &8767279960998370427

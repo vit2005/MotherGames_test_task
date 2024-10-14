@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     public float AttackRange = 2;
 
     [SerializeField] private Animator AnimatorController;
+    [SerializeField] private Image PlayerHpIndicator;
 
     [SerializeField] private Image attackCooldownIndicator;
     [SerializeField] private Image superCooldownIndicator;
@@ -30,17 +31,48 @@ public class Player : MonoBehaviour
     private Enemy closestEnemy;
 
     private bool isDead = false;
+    private float maxHp;
+
+    private void Start()
+    {
+        maxHp = Hp;
+    }
+
+    public void Regen(float value)
+    {
+        if (isDead) return;
+        
+        Hp += value;
+        if (Hp > maxHp)
+            Hp = maxHp;
+
+        UpdatePlayerHpIndicator();
+    }
+
+    public void ReceiveDamage(float value)
+    {
+        if (isDead) return;
+
+        Hp -= value;
+
+        if (Hp <= 0)
+        {
+            Hp = 0;
+            Die();
+        }
+
+        UpdatePlayerHpIndicator();
+    }
+
+    private void UpdatePlayerHpIndicator()
+    {
+        PlayerHpIndicator.fillAmount = Hp / maxHp;
+    }
 
     private void Update()
     {
         if (isDead)
             return;
-
-        if (Hp <= 0)
-        {
-            Die();
-            return;
-        }
 
         UpdateClosestEnemy();
         superButton.interactable = closestEnemy != null;
@@ -117,6 +149,8 @@ public class Player : MonoBehaviour
 
     private void Attack(float damage)
     {
+        if (closestEnemy == null) return;
+
         closestEnemy.Hp -= damage;
     }
 

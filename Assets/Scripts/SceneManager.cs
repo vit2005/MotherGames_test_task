@@ -59,7 +59,9 @@ public class SceneManager : MonoBehaviour
         foreach (var character in wave.Characters)
         {
             Vector3 pos = new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
-            Instantiate(character, pos, Quaternion.identity);
+            var gameObject = Instantiate(character, pos, Quaternion.identity);
+            var enemy = gameObject.GetComponent<Enemy>();
+            enemy.Init();
         }
         currWave++;
         wawesText.text = $"Wave: {currWave}/{Config.Waves.Length}";
