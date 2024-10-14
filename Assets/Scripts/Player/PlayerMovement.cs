@@ -5,18 +5,13 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private Animator animator;
 
     [SerializeField] private float acceleration;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float deceleration;
+    [SerializeField] private float rotationSpeed;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
         float inputVertical = Input.GetAxis("Vertical"); // W,S
@@ -39,6 +34,15 @@ public class PlayerMovement : MonoBehaviour
         else if (rb.velocity.magnitude > 0)
         {
             rb.velocity /= deceleration;
+        }
+
+        animator.SetFloat("Speed", rb.velocity.magnitude);
+
+        //rotation
+        if (isMoving)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(movementDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }
     }
 }
