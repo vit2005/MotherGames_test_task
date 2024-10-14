@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,6 +22,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Image attackCooldownIndicator;
     [SerializeField] private Image superCooldownIndicator;
     [SerializeField] private Button superButton;
+    [SerializeField] private ParticleSystem particleSystem;
 
     private float lastAttackTime = 0;
     private float lastSuperTime = 0;
@@ -31,6 +33,11 @@ public class Player : MonoBehaviour
     private Enemy closestEnemy;
 
     private bool isDead = false;
+    public bool IsDead => isDead;
+
+    private bool canMove = true;
+    public bool CanMove => canMove;
+
     private float maxHp;
 
     private void Start()
@@ -85,7 +92,7 @@ public class Player : MonoBehaviour
             lastAttackTime = Time.time;
             AnimatorController.SetTrigger("Attack");
 
-            Attack(Damage);
+            StartCoroutine(Attack(SuperDamage));
             _attackCooldown = StartCoroutine(AttackCooldown());
         }
     }
@@ -109,7 +116,7 @@ public class Player : MonoBehaviour
             lastSuperTime = Time.time;
             AnimatorController.SetTrigger("Super");
 
-            Attack(SuperDamage);
+            StartCoroutine(Attack(SuperDamage));
             _superCooldown = StartCoroutine(SuperCooldown());
         }
     }
@@ -147,11 +154,23 @@ public class Player : MonoBehaviour
             closestEnemy = null;
     }
 
-    private void Attack(float damage)
+    private IEnumerator Attack(float damage)
     {
-        if (closestEnemy == null) return;
+        canMove = false;
+        yield return new WaitForSeconds(0.2f);
+        if (closestEnemy == null)
+        {
+            canMove = true;
+            yield break;
+        }
 
+        transform.rotation = Quaternion.LookRotation(closestEnemy.transform.position - transform.position);
         closestEnemy.Hp -= damage;
+        particleSystem.Play();
+
+        yield return new WaitForSeconds(0.2f);
+
+        canMove = true;
     }
 
     private void Die()

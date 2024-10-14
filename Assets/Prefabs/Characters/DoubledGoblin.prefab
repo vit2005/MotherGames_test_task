@@ -2560,6 +2560,7 @@ GameObject:
   - component: {fileID: 173266737017993940}
   - component: {fileID: 8947373651996703182}
   - component: {fileID: 2049453971674335796}
+  - component: {fileID: 3129345031149013708}
   m_Layer: 0
   m_Name: DoubledGoblin
   m_TagString: Untagged
@@ -2630,10 +2631,11 @@ MonoBehaviour:
   Hp: 3
   Damage: 1
   AtackSpeed: 1
-  AttackRange: 1
+  AttackRange: 2
   regenPlayerHp: 1
   AnimatorController: {fileID: 173266737017993940}
   Agent: {fileID: 2049453971674335796}
+  collider: {fileID: 3129345031149013708}
   EnemiesToSpawn:
   - {fileID: 977492468783751975, guid: 4c34fad82d8582f40a00c43d3128284a, type: 3}
   - {fileID: 977492468783751975, guid: 4c34fad82d8582f40a00c43d3128284a, type: 3}
@@ -2659,6 +2661,29 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!136 &3129345031149013708
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6536635336172987837}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 29.7
+  m_Height: 123.69971
+  m_Direction: 1
+  m_Center: {x: 0, y: 62.82016, z: 0}
 --- !u!1 &6594796737979111078
 GameObject:
   m_ObjectHideFlags: 0

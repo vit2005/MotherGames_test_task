@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] private Animator AnimatorController;
     [SerializeField] private NavMeshAgent Agent;
+    [SerializeField] private Collider collider;
 
     private float lastAttackTime = 0;
     private bool isDead = false;
@@ -26,27 +27,24 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        if (isDead)
-        {
-            return;
-        }
+        if (isDead) return;
 
         if (Hp <= 0)
         {
             Die();
-            Agent.isStopped = true;
             return;
         }
 
         var distance = Vector3.Distance(transform.position, SceneManager.Instance.Player.transform.position);
-     
-        if (distance <= AttackRange)
+        bool inRange = distance <= AttackRange;
+        Agent.isStopped = inRange;
+
+        if (inRange)
         {
-            Agent.isStopped = true;
             if (Time.time - lastAttackTime > AtackSpeed)
             {
                 lastAttackTime = Time.time;
-                SceneManager.Instance.Player.ReceiveDamage(Damage);
+                StartCoroutine(ActualDamage());
                 AnimatorController.SetTrigger("Attack");
             }
         }
@@ -57,6 +55,16 @@ public class Enemy : MonoBehaviour
         AnimatorController.SetFloat("Speed", Agent.speed); 
     }
 
+    private IEnumerator ActualDamage()
+    {
+        yield return new WaitForSeconds(0.2f);
+        var distance = Vector3.Distance(transform.position, SceneManager.Instance.Player.transform.position);
+        bool inRange = distance <= AttackRange;
+        if (!inRange) yield break;
+
+        SceneManager.Instance.Player.ReceiveDamage(Damage);
+    }
+
 
     protected virtual void Die()
     {
@@ -65,6 +73,8 @@ public class Enemy : MonoBehaviour
         TakedownControllerUI.Instance.SpawnTakedown(gameObject.name);
         isDead = true;
         AnimatorController.SetTrigger("Die");
+        collider.enabled = false;
+        Agent.isStopped = true;
     }
 
 }
