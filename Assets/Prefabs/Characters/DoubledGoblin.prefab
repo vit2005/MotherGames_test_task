@@ -2635,6 +2635,8 @@ MonoBehaviour:
   AtackSpeed: 1
   AttackRange: 2
   regenPlayerHp: 1
+  deathAnimationDelay: 4
+  deathAnimationDuration: 3
   AnimatorController: {fileID: 173266737017993940}
   Agent: {fileID: 2049453971674335796}
   capsuleCollider: {fileID: 3129345031149013708}

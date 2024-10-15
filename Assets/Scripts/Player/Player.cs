@@ -116,7 +116,7 @@ public class Player : MonoBehaviour
             lastSuperTime = Time.time;
             AnimatorController.SetTrigger("Super");
 
-            StartCoroutine(Attack(SuperDamage));
+            StartCoroutine(Attack(SuperDamage, true));
             _superCooldown = StartCoroutine(SuperCooldown());
         }
     }
@@ -143,18 +143,10 @@ public class Player : MonoBehaviour
             .OrderBy(x => x.Distance)
             .FirstOrDefault();
 
-        if (closest != null)
-        {
-            if (closest.Distance <= AttackRange)
-                closestEnemy = closest.Enemy;
-            else
-                closestEnemy = null;
-        }
-        else
-            closestEnemy = null;
+        closestEnemy = closest != null && closest.Distance <= AttackRange ? closest.Enemy : null;
     }
 
-    private IEnumerator Attack(float damage)
+    private IEnumerator Attack(float damage, bool useCameraShake = false)
     {
         canMove = false;
         yield return new WaitForSeconds(0.2f);
@@ -167,6 +159,7 @@ public class Player : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(closestEnemy.transform.position - transform.position);
         closestEnemy.ReceiveDamage(damage);
         ps.Play();
+        if (useCameraShake) CameraShake.Instance.StartShake();
 
         yield return new WaitForSeconds(0.2f);
 
@@ -180,6 +173,5 @@ public class Player : MonoBehaviour
 
         SceneManager.Instance.GameOver();
     }
-
 
 }

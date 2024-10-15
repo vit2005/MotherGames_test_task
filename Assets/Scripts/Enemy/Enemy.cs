@@ -11,6 +11,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float AtackSpeed;
     [SerializeField] private float AttackRange;
     [SerializeField] private float regenPlayerHp;
+    [SerializeField] private float deathAnimationDelay;
+    [SerializeField] private float deathAnimationDuration;
 
     [SerializeField] private Animator AnimatorController;
     [SerializeField] private NavMeshAgent Agent;
@@ -88,17 +90,29 @@ public class Enemy : MonoBehaviour
     {
         SceneManager.Instance.Player.Regen(regenPlayerHp);
         SceneManager.Instance.RemoveEnemy(this);
-        TakedownControllerUI.Instance.SpawnTakedown(gameObject.name.Replace("(clone)",""));
+        TakedownControllerUI.Instance.SpawnTakedown(gameObject.name.Replace("(Clone)",""));
         _isDead = true;
         AnimatorController.SetTrigger("Die");
         capsuleCollider.enabled = false;
         Agent.isStopped = true;
+        StartCoroutine(DeathAnimation());
     }
 
     private IEnumerator DeathAnimation()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(deathAnimationDelay);
 
+        float elapsedTime = 0f;
+
+        while (elapsedTime < deathAnimationDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float newY = Mathf.Lerp(0f, -1f, elapsedTime / deathAnimationDuration);
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+            yield return null;
+        }
+
+        Destroy(gameObject);
     }
 
 }

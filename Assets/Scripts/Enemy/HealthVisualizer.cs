@@ -20,9 +20,6 @@ public class HealthVisualizer : MonoBehaviour
 
     private void Update()
     {
-        //Vector3 targetPosition = _cameraToLookAt.transform.position;
-        //targetPosition.y = transform.position.y;
-        //transform.LookAt(targetPosition);
         transform.rotation = _initialRotation;
     }
 
