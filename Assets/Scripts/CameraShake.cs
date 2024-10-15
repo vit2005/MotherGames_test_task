@@ -8,8 +8,8 @@ public class CameraShake : MonoBehaviour
     public static CameraShake Instance;
 
     public CinemachineVirtualCamera virtualCamera;
-    public float shakeDuration = 0.5f; // Тривалість шейку
-    public float shakeAmplitude = 0.5f; // Амплітуда шейку
+    public float shakeDuration = 0.5f;
+    public float shakeAmplitude = 0.5f;
 
     private CinemachineTransposer transposer;
     private Vector3 originalOffset;

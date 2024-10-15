@@ -35,6 +35,7 @@ public class Enemy : MonoBehaviour
     private void Update()
     {
         if (_isDead) return;
+        if (SceneManager.Instance.Player.IsDead) return;
 
         Move();
     }
@@ -63,7 +64,7 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator ActualDamage()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.4f);
 
         if (_isDead) yield break;
 
