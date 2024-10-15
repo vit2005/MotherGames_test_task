@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Image attackCooldownIndicator;
     [SerializeField] private Image superCooldownIndicator;
     [SerializeField] private Button superButton;
-    [SerializeField] private ParticleSystem particleSystem;
+    [SerializeField] private ParticleSystem ps;
 
     private float lastAttackTime = 0;
     private float lastSuperTime = 0;
@@ -92,7 +92,7 @@ public class Player : MonoBehaviour
             lastAttackTime = Time.time;
             AnimatorController.SetTrigger("Attack");
 
-            StartCoroutine(Attack(SuperDamage));
+            StartCoroutine(Attack(Damage));
             _attackCooldown = StartCoroutine(AttackCooldown());
         }
     }
@@ -105,7 +105,7 @@ public class Player : MonoBehaviour
             value = (Time.time - lastAttackTime) / AttackSpeed;
             attackCooldownIndicator.fillAmount = (Time.time - lastAttackTime) / AttackSpeed;
             yield return null;
-        } while (value < 1);
+        } while (value < 1f);
         _attackCooldown = null;
     }
 
@@ -165,8 +165,8 @@ public class Player : MonoBehaviour
         }
 
         transform.rotation = Quaternion.LookRotation(closestEnemy.transform.position - transform.position);
-        closestEnemy.Hp -= damage;
-        particleSystem.Play();
+        closestEnemy.ReceiveDamage(damage);
+        ps.Play();
 
         yield return new WaitForSeconds(0.2f);
 

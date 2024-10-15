@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    public float Hp;
+    [SerializeField] private float Hp;
     [SerializeField] private float Damage;
     [SerializeField] private float AtackSpeed;
     [SerializeField] private float AttackRange;
@@ -13,37 +14,40 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] private Animator AnimatorController;
     [SerializeField] private NavMeshAgent Agent;
-    [SerializeField] private Collider collider;
+    [SerializeField] private Collider capsuleCollider;
 
-    private float lastAttackTime = 0;
-    private bool isDead = false;
+    public event Action<float> OnHealthChanged; // in percentage
+
+    private float _lastAttackTime = 0f;
+    private bool _isDead = false;
+    private float _maxHp;
 
 
     public void Init()
     {
         SceneManager.Instance.AddEnemy(this);
+        _maxHp = Hp;
         Agent.SetDestination(SceneManager.Instance.Player.transform.position);
     }
 
     private void Update()
     {
-        if (isDead) return;
+        if (_isDead) return;
 
-        if (Hp <= 0)
-        {
-            Die();
-            return;
-        }
+        Move();
+    }
 
+    private void Move()
+    {
         var distance = Vector3.Distance(transform.position, SceneManager.Instance.Player.transform.position);
         bool inRange = distance <= AttackRange;
         Agent.isStopped = inRange;
 
         if (inRange)
         {
-            if (Time.time - lastAttackTime > AtackSpeed)
+            if (Time.time - _lastAttackTime > AtackSpeed)
             {
-                lastAttackTime = Time.time;
+                _lastAttackTime = Time.time;
                 StartCoroutine(ActualDamage());
                 AnimatorController.SetTrigger("Attack");
             }
@@ -52,12 +56,15 @@ public class Enemy : MonoBehaviour
         {
             Agent.SetDestination(SceneManager.Instance.Player.transform.position);
         }
-        AnimatorController.SetFloat("Speed", Agent.speed); 
+        AnimatorController.SetFloat("Speed", Agent.speed);
     }
 
     private IEnumerator ActualDamage()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.5f);
+
+        if (_isDead) yield break;
+
         var distance = Vector3.Distance(transform.position, SceneManager.Instance.Player.transform.position);
         bool inRange = distance <= AttackRange;
         if (!inRange) yield break;
@@ -65,16 +72,33 @@ public class Enemy : MonoBehaviour
         SceneManager.Instance.Player.ReceiveDamage(Damage);
     }
 
+    public void ReceiveDamage(float value)
+    {
+        Hp -= value;
+        if (Hp <= 0)
+        {
+            Hp = 0;
+            Die();
+        }
+
+        OnHealthChanged?.Invoke(Hp / _maxHp);
+    }
 
     protected virtual void Die()
     {
         SceneManager.Instance.Player.Regen(regenPlayerHp);
         SceneManager.Instance.RemoveEnemy(this);
-        TakedownControllerUI.Instance.SpawnTakedown(gameObject.name);
-        isDead = true;
+        TakedownControllerUI.Instance.SpawnTakedown(gameObject.name.Replace("(clone)",""));
+        _isDead = true;
         AnimatorController.SetTrigger("Die");
-        collider.enabled = false;
+        capsuleCollider.enabled = false;
         Agent.isStopped = true;
+    }
+
+    private IEnumerator DeathAnimation()
+    {
+        yield return new WaitForSeconds(5f);
+
     }
 
 }
